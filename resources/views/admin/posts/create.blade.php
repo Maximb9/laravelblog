@@ -30,7 +30,7 @@
                         </div>
                         <!-- /.card-header -->
 
-                        <form role="form" method="post" action="{{ route('posts.store') }}">
+                        <form role="form" method="post" action="{{ route('posts.store') }}" enctype="multipart/form-data">
                             {{--                                //для сохранения данных categories.store, который будет вести на такую же страничку что и--}}
                             {{--                                показ списка категорий, но метод отправки данных у нас должен быть POST--}}
                             @csrf
@@ -40,9 +40,43 @@
                                     <input type="text" name="title"
                                            class="form-control @error('title') is-invalid @enderror" id="title"
                                            placeholder="Название">
-                                    <div class="form-group">
+
+                                    <div class="form-group mt-3">
                                         <label for="description">Цитата</label>
-                                        <textarea name="description" class="form-control" id="description" rows="5" placeholder="Цитата ..."></textarea>
+                                        <textarea name="description" class="form-control" id="description" rows="3" placeholder="Цитата ..."></textarea>
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label for="content">Контент</label>
+                                        <textarea name="content" class="form-control" id="content" rows="7" placeholder="Контент ..."></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="category_id">Категория</label>
+                                        <select class="form-control" id="category_id" name="category_id">
+                                            @foreach($categories as $k => $v)
+                                            <option value="{{ $k }}">{{ $v }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="tags">Теги</label>
+                                        <select class="select2" id="tags" name="tags[]" multiple="multiple" data-placeholder="Выбор тегов" style="width: 100%;">
+                                            @foreach($tags as $k => $v)
+                                            <option value="{{ $k }}">{{ $v }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="thumbnail">Изображение</label>
+                                        <div class="input-group">
+                                            <div class="custom-file">
+                                                <input type="file" name="thumbnail" id="thumbnail" class="custom-file-input">
+                                                <label class="custom-file-label" for="thumbnail">Choose file</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
