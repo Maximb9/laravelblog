@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         //выводим наши категории, получаем их
-        $categories = Category::paginate(2);
+        $categories = Category::paginate(20);
 
         return view('admin.categories.index', compact('categories'));
     }
@@ -28,7 +28,9 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+//        добавление новой категории, возвращаем вид, где у нас будет форма для добавления
+        return view('admin.categories.create');
+
     }
 
     /**
@@ -37,21 +39,21 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+    //указываем правила валидации... только для title, за остальными полями будет следить sluggable
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title'=>'required'
+        ]);
+        //после прохождения валидации, мы должны сохранить эту категорию.
+        //поскольку мы используем массовое заполнение, нам нужно добавить эти поля в свойства $fillable
+        Category::create($request->all());
+
+        //пренаправление на главную страницу. Сообщение о том, что категория добавлена. Для пользователя.
+        return redirect()->route('categories.index')->with('success', 'Категория добавлена');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -61,7 +63,10 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-       dd(__METHOD__);
+       //находим категорию
+        $category = Category::find($id);
+
+        return view ('admin.categories.edit', compact('category'));
     }
 
     /**
@@ -73,7 +78,12 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'title'=>'required'
+        ]);
+        $category = Category::find($id);
+        $category->update($request->all());
+        return redirect()->route('categories.index')->with('success', 'Изменения сохранены');
     }
 
     /**
@@ -84,6 +94,9 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        dd(__METHOD__);
+        $category = Category::find($id);
+        $category->delete();
+//        Category::destroy($id);
+        return redirect()->route('categories.index')->with('success', 'Категория удалена');
     }
 }

@@ -10,6 +10,7 @@ class Tag extends Model
 {
     Use Sluggable;
 
+    protected $fillable = ['title'];
 
     public function posts() {
 
