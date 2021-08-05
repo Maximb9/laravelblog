@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\MainController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +24,8 @@ Route::get('/', function () {
 // 2. Посадили шаблон (админская панель). Минифицировали файлы.
 
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
-    Route::get('/', [MainController::Class, 'index'])->name('admin.index');
+    Route::get('/', [MainController::class, 'index'])->name('admin.index');
+    Route::resource('/categories', 'CategoryController' );
 });
 
 
