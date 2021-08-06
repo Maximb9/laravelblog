@@ -10,10 +10,11 @@ class Post extends Model
 {
     Use Sluggable;
 
+    protected $fillable = ['title', 'description', 'content', 'category_id', 'thumbnail'];
 
     public function tags() {
 
-        return $this->belongsToMany(Tag::Class);
+        return $this->belongsToMany(Tag::Class)->withTimestamps();
     }
 
 

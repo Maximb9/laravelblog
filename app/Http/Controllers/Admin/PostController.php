@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -46,9 +47,26 @@ class PostController extends Controller
     {
         $request->validate([
             'title' => 'required',
+            'description' => 'required',
+            'content' => 'required',
+            'category_id' => 'required|integer',
+            'thumbnail' => 'nullable|image',
         ]);
 
-        dd($request->all());
+        // записываем данные в переменную, мы будем изменять наш thumbnail, нам нужно сохранить и вернуть путь
+        //т.е. у нас в $data thumbnail будет путь если он там есть. Либо null если картинка не загружалась.
+        $data = $request->all();
+
+        // проверяем был ли загружен файл. Если у нас пришел файл, то нам нужно его сохранить, нам нужно этот путь получить.
+        // в этом случае в $data['thumbnail'] мы запишем этот путь. Мы картинки сортируем по папкам с текущей датой.
+        // картинки сортируем по папкам с текущей датой.
+        if($request->hasFile('thumbnail')) {
+            $folder = date('Y-m-d');
+            $data['thumbnail'] = $request->file('thumbnail')->store("images/{$folder}");
+        }
+        // сохраняем в переменную $post, нам это нужно для того чтобы сохранить в будущем теги.
+        $post = Post::create($data);
+        $post->tags()->sync($request->tags);
 
         return redirect()->route('posts.index')->with('success', 'Статья добавлена');
     }
@@ -61,7 +79,11 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        return view('admin.posts.edit');
+        $post = Post::find($id);
+        $categories = Category::pluck('title', 'id')->all();
+        $tags = Tag::pluck('title', 'id')->all();
+
+        return view('admin.posts.edit', compact('categories', 'tags', 'post'));
     }
 
     /**
@@ -75,7 +97,20 @@ class PostController extends Controller
     {
         $request->validate([
             'title' => 'required',
+            'description' => 'required',
+            'content' => 'required',
+            'category_id' => 'required|integer',
+            'thumbnail' => 'nullable|image',
         ]);
+
+        $post = Post::find($id);
+        $data = $request->all();
+
+        if($request->hasFile('thumbnail')) {
+            Storage::delete($post->thumbnail);
+            $folder = date('Y-m-d');
+            $data['thumbnail'] = $request->file('thumbnail')->store("images/{$folder}");
+        }
 
         return redirect()->route('posts.index')->with('success', 'Изменения сохранены');
     }
