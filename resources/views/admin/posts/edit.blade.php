@@ -33,6 +33,7 @@
                         <form role="form" method="post" action="{{ route('posts.update', ['post' => $post->id]) }}" enctype="multipart/form-data">
 
                             @csrf
+                            @method('PUT')
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="title">Название</label>
@@ -76,14 +77,14 @@
                                                 <label class="custom-file-label" for="thumbnail">Choose file</label>
                                             </div>
                                         </div>
-                                        <div>{{ $post->thumbnail }}</div>
+                                        <div><img class="img-thumbnail" width="200px" src="{{ $post->getImage() }}" alt=""></div>
                                     </div>
                                 </div>
                             </div>
                             <!-- /.card-body -->
 
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                                <button type="submit mt-2"  class="btn btn-primary">Сохранить</button>
                             </div>
                         </form>
 

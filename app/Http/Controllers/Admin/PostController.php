@@ -57,13 +57,8 @@ class PostController extends Controller
         //т.е. у нас в $data thumbnail будет путь если он там есть. Либо null если картинка не загружалась.
         $data = $request->all();
 
-        // проверяем был ли загружен файл. Если у нас пришел файл, то нам нужно его сохранить, нам нужно этот путь получить.
-        // в этом случае в $data['thumbnail'] мы запишем этот путь. Мы картинки сортируем по папкам с текущей датой.
-        // картинки сортируем по папкам с текущей датой.
-        if($request->hasFile('thumbnail')) {
-            $folder = date('Y-m-d');
-            $data['thumbnail'] = $request->file('thumbnail')->store("images/{$folder}");
-        }
+
+        $data['thumbnail'] = Post::uploadImage($request);
         // сохраняем в переменную $post, нам это нужно для того чтобы сохранить в будущем теги.
         $post = Post::create($data);
         $post->tags()->sync($request->tags);
@@ -106,12 +101,10 @@ class PostController extends Controller
         $post = Post::find($id);
         $data = $request->all();
 
-        if($request->hasFile('thumbnail')) {
-            Storage::delete($post->thumbnail);
-            $folder = date('Y-m-d');
-            $data['thumbnail'] = $request->file('thumbnail')->store("images/{$folder}");
-        }
+        $data['thumbnail'] = Post::uploadImage($request, $post->thumbnail);
 
+        $post->update($data);
+        $post->tags()->sync($request->tags);
         return redirect()->route('posts.index')->with('success', 'Изменения сохранены');
     }
 
@@ -123,8 +116,10 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-//        $category = Category::find($id);
-//        $category->delete();
+        $post = Post::find($id);
+        $post->tags()->sync([]);
+        Storage::delete($post->thumbnail);
+        $post->delete();
         return redirect()->route('posts.index')->with('success', 'Статья удалена');
     }
 }
