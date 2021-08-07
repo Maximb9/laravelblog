@@ -62,7 +62,7 @@
 
                                     <div class="form-group">
                                         <label for="tags">Теги</label>
-                                        <select class="select2" id="tags" name="tags[]" multiple="multiple" data-placeholder="Выбор тегов" style="width: 100%;">
+                                        <select class="select2" id="tags" name="tags[]" multiple="" data-placeholder="Выбор тегов" style="width: 100%;">
                                             @foreach($tags as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                             @endforeach
